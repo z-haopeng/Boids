@@ -29,7 +29,7 @@ function setup() {
 function draw() {
     background(135, 206, 235);
     for(let i = 0; i < boids.length; i++)
-        boids[i].render();
+        boids[i].run();
     if(followCheck.checked()) {
         push();
         noStroke();
@@ -56,6 +56,18 @@ class Boid {
         this.position = createVector(x, y);
     }
 
+    run() {
+        this.update();
+        this.render();
+    }
+
+    update() {
+        this.position.add(this.velocity.limit(MAX_SPEED));
+        // Add 100 to prevent values from becoming negative, since JavaScript modulus doesn't limit to positive results
+        this.position.x = (this.position.x+100) % 100;
+        this.position.y = (this.position.y+100) % 100;
+    }
+
     render() {
         push();
         fill(0, 175);
@@ -63,12 +75,7 @@ class Boid {
         let xCanvas = map(this.position.x, 0, 100, 0, width);
         let yCanvas = map(this.position.y, 0, 100, 0, height);
         translate(xCanvas, yCanvas);
-        if(followCheck.checked()) {
-            let temp = createVector(mouseX - xCanvas, mouseY - yCanvas);
-            rotate(temp.heading());
-        } else {
-            rotate(this.velocity.heading());
-        }
+        rotate(this.velocity.heading());
         triangle(-BOID_SIZE, BOID_SIZE/3, -BOID_SIZE, -BOID_SIZE/3, 0, 0);
         pop();
     }
