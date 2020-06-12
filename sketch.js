@@ -21,7 +21,7 @@ function setup() {
     followCheck.addClass("follow");
 
     boids = [];
-    for(let i = 0; i < 69; i++) {
+    for(let i = 0; i < 64; i++) {
         boids.push(new Boid(random(5, 95), random(5, 95)));
     }
 }
@@ -62,6 +62,15 @@ class Boid {
     }
 
     update() {
+        let neighborRadius = 10.0;
+        if(separationCheck.checked()) {
+            for(let i = 0; i < boids.length; i++) {
+                if(boids[i] !== this && p5.Vector.sub(this.position, boids[i].position).mag() < neighborRadius) {
+                    this.acceleration.add(createVector(this.position.x - boids[i].position.x, this.position.y - boids[i].position.y).limit(0.5));
+                }
+            }
+        }
+
         if(followCheck.checked()) {
             let scaledMouseX = map(mouseX, 0, width, 0, 100);
             let scaledMouseY = map(mouseY, 0, height, 0, 100);
